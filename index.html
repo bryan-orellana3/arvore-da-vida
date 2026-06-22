@@ -39,14 +39,14 @@ nav button{
 nav button:hover{color:var(--ink)}
 nav button.active{color:var(--gold); border-color:rgba(212,175,55,.4); background:rgba(212,175,55,.07)}
 
-main{max-width:1180px; margin:0 auto; padding:0 18px}
+main{max-width:1320px; margin:0 auto; padding:0 18px}
 section.view{display:none; animation:fade .5s ease}
 section.view.active{display:block}
 @keyframes fade{from{opacity:0; transform:translateY(8px)}to{opacity:1}}
 
 /* ---- cover ---- */
 .cover{min-height:80vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:60px 10px}
-.cover .glyph{width:min(360px,72vw)}
+#coverGlyph{width:min(340px,68vw); max-height:46vh}
 .cover h1{font-size:clamp(34px,7vw,64px); margin:18px 0 4px; letter-spacing:.04em; font-weight:600;
   background:linear-gradient(180deg,#fff,var(--gold) 70%,#9a7d22); -webkit-background-clip:text;
   background-clip:text; -webkit-text-fill-color:transparent}
@@ -66,8 +66,12 @@ section.view.active{display:block}
 @media(max-width:880px){.tree-wrap{grid-template-columns:1fr}}
 .stage{position:relative; background:radial-gradient(ellipse at 50% 35%,#161228,#0c0c16);
   border:1px solid var(--line); border-radius:18px; padding:10px; min-height:420px;
+  display:flex; align-items:center; justify-content:center;
   box-shadow:inset 0 0 80px rgba(124,111,214,.08)}
-svg.tree{width:100%; height:auto; display:block; touch-action:manipulation}
+svg.tree{width:100%; height:auto; display:block; margin:0 auto; touch-action:manipulation}
+/* o Árvore cabe na altura do viewport (sem scroll em telas como 1920x1080) */
+.stage svg.tree{max-height:calc(100vh - 175px); max-width:calc((100vh - 175px) * 0.625)}
+#coverGlyph svg{max-height:46vh}
 .controls{display:flex; gap:8px; flex-wrap:wrap; margin:12px 2px 0}
 .toggle{font-size:12px; letter-spacing:.04em; padding:7px 12px; border-radius:18px; cursor:pointer;
   border:1px solid var(--line); background:none; color:var(--muted); font-family:inherit; transition:.2s}
@@ -172,6 +176,32 @@ footer{border-top:1px solid var(--line); margin-top:40px; padding:26px 18px; tex
 /* scrollbar */
 ::-webkit-scrollbar{width:9px} ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#2a2a44; border-radius:6px}
+
+/* ---- responsivo: tablet ---- */
+@media(max-width:880px){
+  .info{position:static; max-height:none}
+  .toc{position:static; max-height:none; margin-bottom:6px}
+  .stage svg.tree{max-height:none; max-width:100%}
+}
+/* ---- responsivo: celular ---- */
+@media(max-width:600px){
+  nav{padding:8px 12px; gap:3px}
+  .brand{font-size:13px; width:100%; margin:0 0 4px}
+  nav button{font-size:12px; padding:6px 9px}
+  main{padding:0 12px}
+  .tree-wrap{gap:14px; padding:14px 0 40px}
+  .stage{padding:6px; min-height:0}
+  .controls{gap:6px}
+  .toggle{font-size:11px; padding:6px 9px}
+  .reader{gap:16px; padding:16px 0 50px}
+  .chapter .text{text-align:left}
+  .worlds h2,.reader-intro h2,.flashview h2{font-size:24px}
+  .lead{font-size:15px}
+  .cover{min-height:70vh; padding:30px 6px}
+  .cover blockquote{font-size:15px}
+  .info .head,.info .body{padding-left:16px; padding-right:16px}
+  .info dl{grid-template-columns:auto 1fr; font-size:12.5px}
+}
 </style>
 </head>
 <body>
