@@ -64,6 +64,9 @@ section.view.active{display:block}
 /* ---- tree view ---- */
 .tree-wrap{display:grid; grid-template-columns:1fr 360px; gap:24px; padding:24px 0 60px}
 @media(max-width:880px){.tree-wrap{grid-template-columns:1fr}}
+.tree-hint{margin:0 2px 12px; padding:9px 16px; text-align:center; font-size:13.5px; color:var(--gold-soft);
+  background:rgba(212,175,55,.07); border:1px solid rgba(212,175,55,.28); border-radius:24px; letter-spacing:.02em}
+.tree-hint strong{color:var(--gold); font-weight:600}
 .stage{position:relative; background:radial-gradient(ellipse at 50% 35%,#161228,#0c0c16);
   border:1px solid var(--line); border-radius:18px; padding:10px; min-height:420px;
   display:flex; align-items:center; justify-content:center;
@@ -236,6 +239,7 @@ footer{border-top:1px solid var(--line); margin-top:40px; padding:26px 18px; tex
   <section class="view" id="tree">
     <div class="tree-wrap">
       <div>
+        <p class="tree-hint">✦ Toque numa esfera <strong>(Sefirá)</strong> para revelar seu significado, atributos e citação do livro</p>
         <div class="stage" id="treeStage"></div>
         <div class="controls">
           <button class="toggle on" data-t="paths">Caminhos</button>
