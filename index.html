@@ -189,6 +189,17 @@ svg .grow{transition:r 1.2s ease, opacity .9s ease}
 .kseph text.kn{fill:#0a0a12; font-size:11px; font-weight:700; text-anchor:middle}
 .kseph text.kl{fill:var(--ink); font-size:10.5px; letter-spacing:.04em; paint-order:stroke; stroke:#141126; stroke-width:3px}
 
+/* ---- prosperidade ---- */
+.pgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:14px; margin-top:24px}
+.pcard{background:var(--panel); border:1px solid var(--line); border-top:3px solid var(--pc,var(--gold)); border-radius:0 0 14px 14px; padding:16px 18px}
+.pcard h3{margin:0 0 6px; color:#fff; font-size:17px}
+.pcard p{margin:0; font-size:14px; color:#ddd9ec; line-height:1.65}
+.pcard p em{color:var(--gold-soft)}
+.pnode{cursor:pointer}
+.pnode rect{transition:.2s}
+.pnode:hover rect{filter:brightness(1.3)}
+.pnode text{pointer-events:none; text-anchor:middle; dominant-baseline:central}
+
 footer{border-top:1px solid var(--line); margin-top:40px; padding:26px 18px; text-align:center; color:var(--muted); font-size:12.5px}
 footer strong{color:var(--ink)}
 ::-webkit-scrollbar{width:9px} ::-webkit-scrollbar-track{background:transparent}
@@ -230,6 +241,7 @@ footer strong{color:var(--ink)}
     <button data-view="partzufim">Partzufim</button>
     <button data-view="worlds">Os Mundos</button>
     <button data-view="body">O Corpo</button>
+    <button data-view="prosperity">Prosperidade</button>
   </nav>
 </header>
 
@@ -321,6 +333,20 @@ footer strong{color:var(--ink)}
         <div class="stage" id="bodyStage"></div>
       </div>
       <aside class="info" id="bodyPanel"></aside>
+    </div>
+  </section>
+
+  <!-- PROSPERIDADE -->
+  <section class="view page" id="prosperity">
+    <h2 class="title">Prosperidade e Sustento</h2>
+    <p class="lead">Na Kabbalah luriana o dinheiro não é a fonte da abundância: é <strong>Malchut</strong>, o ponto onde a Luz se torna visível. A pergunta não é “como consigo mais dinheiro?”, mas <strong>“quanta Luz meu recipiente consegue sustentar?”</strong></p>
+    <div class="stage" id="prospFlow" style="max-width:760px; margin:0 auto"></div>
+    <div class="pgrid" id="prospCards"></div>
+    <h2 class="title" style="margin-top:46px">O sustento na Árvore</h2>
+    <p class="lead">Toque numa Sefirá para ver seu papel no fluxo da abundância, da intenção até o dinheiro na mão.</p>
+    <div class="split" style="padding-top:0">
+      <div class="stage" id="prospStage"></div>
+      <aside class="info" id="prospPanel"></aside>
     </div>
   </section>
 </main>
@@ -857,6 +883,76 @@ function selectBody(id){
   $("#toTree").addEventListener("click",()=>{showView("tree"); selectSeph(id);});
 }
 
+/* ================= PROSPERIDADE ================= */
+const PCARDS=[
+ {id:"luz",c:"var(--gold)",t:"A Luz não é escassa",p:"Para Ashlag, a vontade do Criador é dar sem medida. O limite não está na Luz, mas no recipiente: quanto você consegue receber sem se quebrar. Por isso a mesma oportunidade leva pessoas a lugares tão diferentes."},
+ {id:"pao",c:"#e0715a",t:"O Pão da Vergonha",p:"O que se recebe sem ganhar e sem compartilhar cria um desequilíbrio — como o convidado que se envergonha de comer o que não é seu. É o <em>Desejo de Receber Somente para Si</em>: um desejo sem tela."},
+ {id:"quebra",c:"#e0715a",t:"A Quebra dos Vasos",p:"Em Nekudim, a Luz chegou forte demais a recipientes isolados, sem ligação entre si, e eles se quebraram. A abundância que chega a uma vida sem estrutura, sem limites e sem vínculos tende a se perder em dívidas, conflitos ou vazio."},
+ {id:"restr",c:"#3fbf8a",t:"A Restrição",p:"Não é rejeitar o dinheiro: é parar antes de reagir — a compra por impulso, a decisão tomada pelo medo ou pela cobiça, o atalho desonesto. É a tela que permite receber sem se quebrar."},
+ {id:"refl",c:"#3fbf8a",t:"A Luz Refletida",p:"Você recebe na medida em que o que recebe passa por você até os outros: o valor real entregue ao cliente, o pagamento justo a quem trabalha com você, a generosidade. É o <em>Desejo de Receber para Compartilhar</em> — quanto mais retorna, mais o recipiente cresce."},
+ {id:"maaser",c:"var(--gold)",t:"O dízimo (maaser)",p:"A prática que torna isso concreto. O Talmud brinca com as palavras: <em>aser bishvil shetitasher</em>, “dá o dízimo para que enriqueças” (Taanit 9a). E o profeta: “provai-me nisto… se eu não vos abrir as janelas do céu” (Malaquias 3:10)."},
+ {id:"centelhas",c:"var(--accent)",t:"As centelhas no trabalho",p:"As 288 centelhas caíram no mundo material. O ensinamento chassídico, apoiado no Ari, diz que elas estão também no comércio e no trabalho: um negócio honesto, que serve aos outros, eleva centelhas — e o trabalho vira parte do Tikun."},
+ {id:"equilibrio",c:"var(--muted)",t:"Esforço e confiança",p:"A tradição pede as duas coisas: <em>hishtadlut</em>, o seu esforço concreto, e <em>bitachon</em>, a confiança de que o sustento vem de cima. O Ari não escreveu sobre dinheiro: esta aplicação vem de Ashlag, do Kabbalah Centre e do chassidismo. Não é uma fórmula para enriquecer, mas uma mudança de consciência."},
+];
+// Leitura aplicada (didática) de cada Sefirá no fluxo do sustento
+const PROSP={
+ keter:["A intenção","Antes de qualquer ganho existe uma vontade. Keter pergunta: para quê quero esse dinheiro? Receber somente para si ou para compartilhar? A intenção é a raiz de tudo o que vem depois."],
+ chokhmah:["A ideia","O lampejo: a ideia de negócio, a percepção de uma oportunidade. Chega inteira e rápida — mas sozinha ainda não é sustento."],
+ binah:["O plano","Binah desenvolve o lampejo: plano, cálculo, estratégia. É onde a ideia ganha uma forma capaz de se sustentar."],
+ chesed:["Dar","O fluxo: entregar valor, ser generoso, abrir portas. Sem Chesed nada circula; sozinho, porém, transborda e se perde."],
+ gevurah:["O limite","Saber dizer não, cortar o supérfluo, cobrar o justo, ter orçamento. É a Restrição aplicada ao dinheiro: o que dá forma ao fluxo de Chesed."],
+ tiferet:["O equilíbrio","A linha do meio entre dar e conter: negócios honestos, preço justo — nem desperdício, nem avareza."],
+ netzach:["A constância","Insistir, tentar de novo, sustentar o esforço no tempo. É a <em>hishtadlut</em> que a tradição pede."],
+ hod:["A gratidão","Reconhecer de onde vem o que chega — clientes, parceiros, a Luz. A gratidão mantém o canal aberto."],
+ yesod:["O canal","É José, que guardou o trigo nos anos bons e alimentou todos nos anos ruins: “era ele quem fornecia o cereal a todo o povo da terra” (Gênesis 42:6). Yesod reúne e reparte — poupança e distribuição."],
+ malkhut:["O dinheiro na mão","Malchut não tem luz própria: o dinheiro é o reflexo de tudo o que fluiu acima. Cuidar só de Malchut é olhar para o efeito e esquecer a causa."],
+};
+function initProsperity(){
+  const N=(x,y,w,t,s,kind,card)=>{const st={self:["#2a1714","#e0715a"],share:["#10261d","#3fbf8a"],n:["#1b1b33","#5a5680"]}[kind];
+    return `<g class="pnode" data-card="${card}"><rect x="${x}" y="${y}" width="${w}" height="56" rx="8" fill="${st[0]}" stroke="${st[1]}" stroke-width="1.2"/>
+      <text x="${x+w/2}" y="${y+19}" fill="#fff" font-size="14">${t}</text><text x="${x+w/2}" y="${y+39}" fill="var(--muted)" font-size="12">${s}</text></g>`};
+  const A=(d,c="#7d79a0",dash="")=>`<path d="${d}" fill="none" stroke="${c}" stroke-width="1.5" ${dash?`stroke-dasharray="${dash}"`:""} marker-end="url(#pa)"/>`;
+  $("#prospFlow").innerHTML=`<svg viewBox="0 0 680 530" xmlns="${NS}">
+    <defs><marker id="pa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>
+    ${N(235,30,210,"Luz","abundância sem limite","n","luz")}
+    ${A("M340 86 L340 118")}
+    ${N(235,120,210,"Seu recipiente","o que você sustenta","n","luz")}
+    ${A("M340 176 L340 206 L165 206 L165 238")}${A("M340 206 L515 206 L515 238")}
+    ${N(60,240,210,"Receber Somente para Si","desejo sem tela","self","pao")}
+    ${A("M165 296 L165 328","#e0715a")}
+    ${N(60,330,210,"Pão da Vergonha","o não ganho não se sustenta","self","pao")}
+    ${A("M165 386 L165 418","#e0715a")}
+    ${N(60,420,210,"O recipiente se quebra","como em Nekudim","self","quebra")}
+    ${N(410,240,210,"Restrição","pausa antes de reagir","share","restr")}
+    ${A("M515 296 L515 328","#3fbf8a")}
+    ${N(410,330,210,"Compartilhar","a Luz Refletida","share","refl")}
+    ${A("M515 386 L515 418","#3fbf8a")}
+    ${N(410,420,210,"O recipiente cresce","e recebe mais Luz","share","refl")}
+    ${A("M620 448 L650 448 L650 58 L448 58","#3fbf8a","5 4")}
+    <text x="340" y="512" text-anchor="middle" fill="var(--muted)" font-size="12">Toque numa caixa para ver a explicação</text>
+  </svg>`;
+  $("#prospCards").innerHTML=PCARDS.map(c=>`<div class="pcard" id="pc-${c.id}" style="--pc:${c.c}"><h3>${c.t}</h3><p>${c.p}</p></div>`).join("");
+  document.querySelectorAll("#prospFlow .pnode").forEach(n=>n.addEventListener("click",()=>{
+    const card=$("#pc-"+n.dataset.card);
+    card.scrollIntoView({behavior:"smooth",block:"center"});
+    card.animate([{boxShadow:"0 0 0 2px var(--gold)"},{boxShadow:"0 0 0 0 transparent"}],{duration:1400});
+  }));
+
+  const svg=buildTree($("#prospStage"));
+  svg.querySelectorAll(".seph").forEach(g=>g.addEventListener("click",()=>{
+    const id=g.dataset.id, s=byId(id), [t,p]=PROSP[id];
+    svg.querySelectorAll(".seph").forEach(o=>o.classList.toggle("sel",o===g));
+    svg.querySelectorAll(".path").forEach(l=>{const q=PATHS[+l.dataset.i]; l.classList.toggle("dim",q.a!==id&&q.b!==id)});
+    $("#prospPanel").innerHTML=`<div class="head" style="--c:${COLOR[id]}">
+        <span class="pill">Sefirá ${s.n} · ${s.tr}</span><h2>${t}</h2><div class="heb-big hebrew">${s.heb}</div></div>
+      <div class="body"><div class="sec" style="margin-top:14px"><p>${p}</p></div></div>`;
+  }));
+  $("#prospPanel").innerHTML=`<div class="body" style="padding-top:20px">
+    <h2 style="margin:0 0 10px;color:#fff;font-size:22px">Da intenção ao dinheiro</h2>
+    <div class="sec"><p>A abundância desce pela Árvore como a Luz: começa como intenção em Keter, vira ideia e plano, passa pelo equilíbrio entre dar e conter, e só no fim chega a Malchut — o dinheiro na mão.</p></div>
+    <p class="note" style="margin-top:12px">Esta é uma leitura didática da Árvore aplicada ao sustento, não um texto clássico.</p></div>`;
+}
+
 /* ================= CAPA ================= */
 function initCover(){
   $("#coverQuote").innerHTML=`“Antes que os emanados fossem emanados e os criados fossem criados, uma Luz superior simples preenchia toda a existência. Não havia nenhum lugar vazio… tudo estava preenchido por aquela Luz simples do Ein Sof.”<cite>Etz Chaim · o Ari, por Rabi Chaim Vital</cite>`;
@@ -874,7 +970,7 @@ function showView(v){
 }
 document.querySelectorAll("[data-view],[data-go]").forEach(b=>b.addEventListener("click",()=>showView(b.dataset.view||b.dataset.go)));
 
-initCover(); initTree(); initTzimtzum(); initVessel(); initShevira(); initPartzufim(); initWorlds(); initBody();
+initCover(); initTree(); initTzimtzum(); initVessel(); initShevira(); initPartzufim(); initWorlds(); initBody(); initProsperity();
 </script>
 </body>
 </html>
