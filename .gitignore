@@ -4,3 +4,4 @@ _template.html
 # Sistema
 .DS_Store
 Thumbs.db
+build.py
